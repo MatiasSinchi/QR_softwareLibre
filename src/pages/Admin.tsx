@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import ComboManager from "../components/ComboManager";
+import CouponDialog from "../components/CouponDialog";
 import OrderForm from "../components/OrderForm";
 import OrderList from "../components/OrderList";
 import StatsCards from "../components/StatsCards";
@@ -12,14 +13,18 @@ export default function Admin() {
   const { session, signOut } = useAuth();
   const { combos, orders, stats, loading, error, reload } = useAdminData();
   const [lastCreated, setLastCreated] = useState<Order | null>(null);
+  const [couponOrder, setCouponOrder] = useState<Order | null>(null);
 
   async function onCreated(order: Order) {
     setLastCreated(order);
+    // Compra pagada: se muestra el cupón de inmediato para que el comprador escanee el QR.
+    if (order.payment_status === "pagado") setCouponOrder(order);
     await reload();
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4 p-4 pb-16">
+    <>
+    <div className="mx-auto max-w-4xl space-y-4 p-4 pb-16 print:hidden">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-xl font-semibold">Panel de cupones</h1>
@@ -53,8 +58,10 @@ export default function Admin() {
       )}
 
       <OrderForm combos={combos} onCreated={onCreated} />
-      <OrderList orders={orders} onChanged={reload} />
+      <OrderList orders={orders} onChanged={reload} onShowCoupon={setCouponOrder} />
       <ComboManager combos={combos} onChanged={reload} />
     </div>
+    {couponOrder && <CouponDialog order={couponOrder} onClose={() => setCouponOrder(null)} />}
+    </>
   );
 }

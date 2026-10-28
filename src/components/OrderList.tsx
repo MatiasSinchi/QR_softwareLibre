@@ -8,11 +8,12 @@ import { DeliveryBadge, PaymentBadge } from "./StatusBadge";
 interface Props {
   orders: Order[];
   onChanged: () => Promise<void>;
+  onShowCoupon: (order: Order) => void;
 }
 
 const dateFormat = new Intl.DateTimeFormat("es", { dateStyle: "short", timeStyle: "short" });
 
-export default function OrderList({ orders, onChanged }: Props) {
+export default function OrderList({ orders, onChanged, onShowCoupon }: Props) {
   const [search, setSearch] = useState("");
   const [payment, setPayment] = useState<"" | PaymentStatus>("");
   const [delivery, setDelivery] = useState<"" | DeliveryStatus>("");
@@ -36,10 +37,11 @@ export default function OrderList({ orders, onChanged }: Props) {
     if (!ok) return;
     setBusyId(order.id);
     setError(null);
-    const { error: rpcError } = await supabase.rpc("confirm_payment", { p_order_id: order.id });
+    const { data, error: rpcError } = await supabase.rpc("confirm_payment", { p_order_id: order.id }).single();
     if (rpcError) setError(errorMessage(rpcError));
     await onChanged();
     setBusyId(null);
+    if (data) onShowCoupon(data as Order);
   }
 
   return (
@@ -104,6 +106,11 @@ export default function OrderList({ orders, onChanged }: Props) {
               <div className="flex flex-wrap items-center gap-2">
                 <PaymentBadge status={o.payment_status} />
                 {o.payment_status === "pagado" && <DeliveryBadge status={o.delivery_status} />}
+                {o.payment_status === "pagado" && (
+                  <button className="btn btn-secondary" onClick={() => onShowCoupon(o)}>
+                    Ver cupón
+                  </button>
+                )}
                 {o.payment_status === "pendiente" && (
                   <button className="btn btn-primary" disabled={busyId === o.id} onClick={() => void confirmPayment(o)}>
                     {busyId === o.id ? "Confirmando…" : "Confirmar pago"}
