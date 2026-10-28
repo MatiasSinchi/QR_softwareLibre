@@ -6,7 +6,12 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:start": "supabase start -x mailpit,imgproxy,vector,logflare",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db && bash supabase/tests/concurrencia.sh",
+    "dev:cloud": "vite --mode cloud"
   },
   "private": true,
   "type": "module",
