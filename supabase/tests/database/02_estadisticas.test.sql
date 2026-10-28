@@ -2,6 +2,10 @@
 begin;
 select no_plan();
 
+-- Aislamiento: se parte de una tabla orders vacía DENTRO de esta transacción (se revierte al final),
+-- así las pruebas no dependen de los datos que ya haya en la base local ni los alteran.
+delete from public.orders;
+
 insert into auth.users (id, email) values
   ('aaaaaaaa-0000-0000-0000-000000000001', 'admin@test.local'),
   ('bbbbbbbb-0000-0000-0000-000000000002', 'otro@test.local');

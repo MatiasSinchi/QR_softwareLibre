@@ -7,11 +7,13 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:start": "supabase start -x mailpit,imgproxy,vector,logflare",
+    "db:start": "supabase start -x mailpit,imgproxy,vector,logflare,studio,postgres-meta",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db && bash supabase/tests/concurrencia.sh",
-    "dev:cloud": "vite --mode cloud"
+    "dev:cloud": "vite --mode cloud",
+    "test:integration": "bash scripts/test-integration.sh",
+    "test:all": "npm test && npm run db:test && npm run test:integration"
   },
   "private": true,
   "type": "module",

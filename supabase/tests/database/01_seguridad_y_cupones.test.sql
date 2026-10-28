@@ -4,6 +4,10 @@
 begin;
 select no_plan();
 
+-- Aislamiento: se parte de una tabla orders vacía DENTRO de esta transacción (se revierte al final),
+-- así las pruebas no dependen de los datos que ya haya en la base local ni los alteran.
+delete from public.orders;
+
 -- ---------------------------------------------------------------------------
 -- Datos de prueba (como postgres, sin RLS)
 -- ---------------------------------------------------------------------------
