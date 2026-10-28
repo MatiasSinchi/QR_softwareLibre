@@ -9,6 +9,7 @@ import PublicCoupon from "./pages/PublicCoupon";
 // El comprador solo abre /cupon/...: el panel de administración no se descarga en su teléfono.
 const Admin = lazy(() => import("./pages/Admin"));
 const Login = lazy(() => import("./pages/Login"));
+const Scan = lazy(() => import("./pages/Scan"));
 
 export default function App() {
   return (
@@ -34,7 +35,7 @@ export default function App() {
           path="/admin/scan"
           element={
             <RequireAdmin>
-              <Placeholder title="Escáner de cupones" phase={5} />
+              <Scan />
             </RequireAdmin>
           }
         />
